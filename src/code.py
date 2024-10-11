@@ -12,12 +12,14 @@ TIMEOUT = 10                    #Tiempo de espera para ingresar la contraseña, 
 
 #Variables del sistema.
 estado = "B"                    #Estado del sistema. Puede ser "B"(bloqueado), "D"(desbloqueado) o "A"(alerta).
+coronaBloqueada = True          #Estado del recinto que protege la corona.
 usbReader = USBSerialReader()   #Permite leer inputs desde control.
 
 def bloquearSistema():
     global estado
     print("Sistema bloqueado.")
     print("CONTROL: Sistema bloqueado.")
+    coronaBloqueada = True
     led.apagar()
     estado = "B"
 
@@ -110,6 +112,10 @@ while True:
 
     if estado == "D":
         if btnCorona:
-            print("Corona bloqueada. Tiene 5 segundos para salir.")
-            time.sleep(5)
-            bloquearSistema()
+            if coronaBloqueada:
+                print("Recinto de la corona desbloqueado.")
+                coronaBloqueada = False
+                time.sleep(0.3)
+            else:
+                print("El recinto de la corona ya está desbloqueado")
+                time.sleep(0.3)
