@@ -8,7 +8,7 @@ import time
 
 #Constantes
 CLAVE = "123"                   #Contraseña para desbloquear el sistema.
-TIMEOUT = 10                    #Tiempo de espera para ingresar la contraseña, en segundos.
+TIMEOUT = 15                    #Tiempo de espera para ingresar la contraseña, en segundos.
 
 #Variables del sistema.
 estado = "B"                    #Estado del sistema. Puede ser "B"(bloqueado), "D"(desbloqueado) o "A"(alerta).
