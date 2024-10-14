@@ -1,15 +1,13 @@
-import digitalio
-import board
+from machine import Pin
 
-#Pin del buzzer
-PIN_BUZZER = board.GP2
+# Pin del buzzer
+PIN_BUZZER = 2
 
-#Configuración del buzzer
-buzzer = digitalio.DigitalInOut(PIN_BUZZER)
-buzzer.direction = digitalio.Direction.OUTPUT
+# Configuración del buzzer
+buzzer = Pin(PIN_BUZZER, Pin.OUT)
 
 def encender():
-    buzzer.value = True
+    buzzer.value(1)
 
 def apagar():
-    buzzer.value = False
+    buzzer.value(0)
