@@ -1,46 +1,54 @@
-import digitalio
-import board
+from machine import Pin
 import time
-from adafruit_motor import stepper
 
-#Pines del motor.
-PIN_MOTOR1 = board.GP12
-PIN_MOTOR2 = board.GP13
-PIN_MOTOR3 = board.GP14
-PIN_MOTOR4 = board.GP15
+# Pines del motor
+PIN_MOTOR1 = 12
+PIN_MOTOR3 = 13
+PIN_MOTOR4 = 14
+PIN_MOTOR2 = 15
 
-STEPS = 500     #Cantidad de pasos en que el motor se moverá.
-DELAY = 0.01    #Tiempo entre pasos.
+STEPS = 100     # Cantidad de pasos en que el motor se moverá.
+DELAY = 0.01    # Tiempo entre pasos.
 
-#Definicion de cada bobina del motor.
-coil1 = digitalio.DigitalInOut(PIN_MOTOR1)
-coil2 = digitalio.DigitalInOut(PIN_MOTOR2)
-coil3 = digitalio.DigitalInOut(PIN_MOTOR3)
-coil4 = digitalio.DigitalInOut(PIN_MOTOR4)
+# Definicion de cada bobina del motor
+coil1 = Pin(PIN_MOTOR1, Pin.OUT)
+coil2 = Pin(PIN_MOTOR2, Pin.OUT)
+coil3 = Pin(PIN_MOTOR3, Pin.OUT)
+coil4 = Pin(PIN_MOTOR4, Pin.OUT)
 
-coil1.direction = digitalio.Direction.OUTPUT
-coil2.direction = digitalio.Direction.OUTPUT
-coil3.direction = digitalio.Direction.OUTPUT
-coil4.direction = digitalio.Direction.OUTPUT
+# Secuencia de pasos para el motor
+sequence = [
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1]
+]
 
-#Definicion del motor.
-motor = stepper.StepperMotor(coil1, coil2, coil3, coil4, microsteps=None)
 puertaAbierta = True
+
+def set_step(w1, w2, w3, w4):
+    coil1.value(w1)
+    coil2.value(w2)
+    coil3.value(w3)
+    coil4.value(w4)
+
+def step_motor(direction):
+    for step in sequence[::direction]:
+        set_step(*step)
+        time.sleep(DELAY)
 
 def abrirPuerta():
     global puertaAbierta
     if not puertaAbierta:
-        for step in range(STEPS):
-            motor.onestep(direction=stepper.FORWARD)
-            time.sleep(DELAY)
-        motor.release()
+        for _ in range(STEPS):
+            step_motor(1)  # 1 for forward
         puertaAbierta = True
+    set_step(0, 0, 0, 0)  # Release the motor
 
 def cerrarPuerta():
     global puertaAbierta
     if puertaAbierta:
-        for step in range(STEPS):
-            motor.onestep(direction=stepper.BACKWARD)
-            time.sleep(DELAY)
-        motor.release()
+        for _ in range(STEPS):
+            step_motor(-1)  # -1 for backward
         puertaAbierta = False
+    set_step(0, 0, 0, 0)  # Release the motor
